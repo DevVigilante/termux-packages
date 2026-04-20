@@ -131,9 +131,9 @@ The 'termux_core__sh__termux_apps_info_app_version_name' function expects 2 argu
         # not exported), then fallback to reading the old/deprecated
         # `TERMUX_VERSION` environment variable.
         # This may give outdated/wrong values if running in a plugin
-        # app like Termux:Float app and Termux app got updated in the
+        # app like com.logicodeum.ide:Float app and Termux app got updated in the
         # background, as `TERMUX_VERSION` would be set to the version
-        # at the time the Termux:Float shell was started, and not the
+        # at the time the com.logicodeum.ide:Float shell was started, and not the
         # updated version.
         if [ $return_value -eq 0 ] && [ -z "$__app_version_name" ] && \
             { [ "$scoped_var_scope_mode" = cn="termux-app" ] || [ "$scoped_var_scope_mode" = ss="APP__" ]; } && \

@@ -18,7 +18,7 @@ termux_pkg_auto_update() {
 	local latest_version
 	latest_version="$(
 		curl -fsL \
-			-A "Termux update checker 1.1 (github.com/termux/termux-packages)" \
+			-A "Termux update checker 1.1 (github.com/logicodeum/ide/termux-packages)" \
 			-H "accept: application/json" \
 			"$api_url" \
 		| jq -r '.[0].tag_name'

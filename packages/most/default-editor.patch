@@ -7,7 +7,7 @@ index 914e581..31b3001 100644
       editor = "EDT";
  #else
 -   editor = "vi";
-+   editor = "editor"; // [PATCH] Termux: let `update-alternatives` decide
++   editor = "editor"; // [PATCH] com.logicodeum.ide: let `update-alternatives` decide
  #endif
  
  #ifdef VMS

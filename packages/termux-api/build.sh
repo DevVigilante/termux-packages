@@ -1,5 +1,5 @@
-TERMUX_PKG_HOMEPAGE=https://wiki.termux.com/wiki/Termux:API
-TERMUX_PKG_DESCRIPTION="Termux API commands (install also the Termux:API app)"
+TERMUX_PKG_HOMEPAGE=https://wiki.termux.com/wiki/com.logicodeum.ide:API
+TERMUX_PKG_DESCRIPTION="Termux API commands (install also the com.logicodeum.ide:API app)"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=0.59.1

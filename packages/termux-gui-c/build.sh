@@ -1,5 +1,5 @@
 TERMUX_PKG_HOMEPAGE="https://github.com/tareksander/termux-gui-c-bindings"
-TERMUX_PKG_DESCRIPTION="A C library for the Termux:GUI plugin"
+TERMUX_PKG_DESCRIPTION="A C library for the com.logicodeum.ide:GUI plugin"
 TERMUX_PKG_LICENSE="MPL-2.0"
 TERMUX_PKG_MAINTAINER="@tareksander"
 TERMUX_PKG_VERSION="0.1.3"

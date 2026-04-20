@@ -22,6 +22,15 @@ TERMUX_PKG_DEPENDS="bzip2, coreutils, curl, dash, diffutils, findutils, gawk, gr
 TERMUX_PKG_RECOMMENDS="ed, dos2unix, inetutils, net-tools, patch, unzip"
 
 termux_step_pre_configure() {
+	. "$TERMUX_SCRIPTDIR/scripts/termux_generator_utils.sh"
+   replace_termux_name "$TERMUX_PKG_SRCDIR" "$TERMUX_APP__PACKAGE_NAME"
+	echo "Welcome to $TERMUX_APP__PACKAGE_NAME!
+This is a fork of \"F-Droid\" Termux!
+Do not report issues with this build upstream!
+========= Donate Here ===========
+https://termux.dev/en/donate.html
+https://opencollective.com/termux
+=================================" > motds/motd
 	autoreconf -vfi
 }
 

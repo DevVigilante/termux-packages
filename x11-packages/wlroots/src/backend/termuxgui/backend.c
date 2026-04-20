@@ -14,7 +14,7 @@ struct wlr_tgui_backend *tgui_backend_from_backend(struct wlr_backend *wlr_backe
 static bool backend_start(struct wlr_backend *wlr_backend) {
     struct wlr_tgui_backend *backend = tgui_backend_from_backend(wlr_backend);
     backend->started = true;
-    wlr_log(WLR_INFO, "Starting Termux:GUI backend");
+    wlr_log(WLR_INFO, "Starting com.logicodeum.ide:GUI backend");
 
     wl_signal_emit_mutable(&backend->backend.events.new_input, &backend->keyboard.base);
     wl_signal_emit_mutable(&backend->backend.events.new_input, &backend->pointer.base);
@@ -132,7 +132,7 @@ const struct wlr_keyboard_impl tgui_keyboard_impl = {
 };
 
 struct wlr_backend *wlr_tgui_backend_create(struct wl_event_loop *loop) {
-    wlr_log(WLR_INFO, "Creating Termux:GUI backend");
+    wlr_log(WLR_INFO, "Creating com.logicodeum.ide:GUI backend");
 
     struct wlr_tgui_backend *backend = calloc(1, sizeof(*backend));
     if (!backend) {

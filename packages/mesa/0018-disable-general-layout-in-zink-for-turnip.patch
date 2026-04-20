@@ -1,5 +1,5 @@
 Partially reverts https://gitlab.freedesktop.org/mesa/mesa/-/commit/622612f67ea72298c3d85dfe53c5d54ee9f98527
-because that commit causes severe artifacts in Webrender in Firefox in Termux:X11 with GLX enabled and EGL
+because that commit causes severe artifacts in Webrender in Firefox in com.logicodeum.ide:X11 with GLX enabled and EGL
 force-disabled in Zink in Turnip on Adreno devices, while using the about:config settings
 gfx.webrender.all=true and gfx.x11-egl.force-disabled=true,
 and doing this prevents the artifacts from occurring.

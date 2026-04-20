@@ -31,7 +31,7 @@ index e4e8c8d8..b9a04d4c 100644
 +
 +	return backend;
 +#else
-+	wlr_log(WLR_ERROR, "Cannot create Termux:GUI backend: disabled at compile-time");
++	wlr_log(WLR_ERROR, "Cannot create com.logicodeum.ide:GUI backend: disabled at compile-time");
 +	return NULL;
 +#endif
 +}

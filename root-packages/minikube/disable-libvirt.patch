@@ -1,4 +1,4 @@
-Prevents this build error when building for 64-bit x86 Termux:
+Prevents this build error when building for 64-bit x86 com.logicodeum.ide:
 
 # libvirt.org/go/libvirt
 # [/home/builder/.termux-build/_cache/android-r29-api-24-v3/bin/pkg-config --cflags

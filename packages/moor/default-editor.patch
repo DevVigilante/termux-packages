@@ -4,7 +4,7 @@
  	}
  
  	candidates := []string{
-+		"editor", // [PATCH] Termux: default to `editor` to let `update-alternatives` choose
++		"editor", // [PATCH] com.logicodeum.ide: default to `editor` to let `update-alternatives` choose
  		"vim", // This is a sucky default, but let's have it for compatibility with less
  		"nano",
  		"vi",

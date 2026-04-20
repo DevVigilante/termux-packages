@@ -8,7 +8,7 @@ TERMUX_PKG_SHA256=1ace2d8ec74f632d82eab5006753a27fe0c2402db4ca94d63271e494b62f50
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="glib, gst-plugins-base, gstreamer, libandroid-shmem, libbz2, libcaca, libflac, libjpeg-turbo, libmp3lame, libnettle, libpng, libvpx, libx11, libxext, libxfixes, libxml2, libmpg123, pulseaudio, zlib"
 # -Dqt5=disabled and -Dqt6=disabled avoid
-# /bin/bash: line 1: /data/data/com.termux/files/usr/lib/qt6/moc: cannot execute binary file: Exec format error
+# /bin/bash: line 1: /data/data/com.logicodeum.ide/files/usr/lib/qt6/moc: cannot execute binary file: Exec format error
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -Dcairo=disabled
 -Dexamples=disabled

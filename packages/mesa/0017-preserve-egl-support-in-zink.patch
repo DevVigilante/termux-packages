@@ -2,18 +2,18 @@ mesa upstream code 'thinks' that if 'x11_dri3_open()'
 has a negative retval, then DRI3 EGL acceleration in Zink with the current settings
 is impossible in all cases and it disables Zink and falls back to software rendering.
 
-However, Termux:X11 is a 3rd party edge case where, in actual testing,
+However, com.logicodeum.ide:X11 is a 3rd party edge case where, in actual testing,
 for a very long time throughout the past year of mesa releases,
 even if 'x11_dri3_open()' has a negative retval,
 for some reason Zink+Tunip GPU acceleration still works if force-enabled
 anytime that software rendering is not the initial default.
 
 This 'Termux-unaware' upstream mesa codepath that fails to 'understand' the true
-capabilities of Zink+Turnip+Termux:X11 has gradually been building up in the background
+capabilities of Zink+Turnip+com.logicodeum.ide:X11 has gradually been building up in the background
 for the last several months, but in this commit:
 https://gitlab.freedesktop.org/mesa/mesa/-/commit/3294cad34159bd5317e3dfb0cb4e0ba5caca9f77
 the 'switch was flipped' to the new codepath, so to speak, locking vanilla mesa's EGL
-support away from the Zink+Turnip+Termux:X11 codepath unless some kind of intervention
+support away from the Zink+Turnip+com.logicodeum.ide:X11 codepath unless some kind of intervention
 is performed, such as this patch.
 
 --- a/src/egl/drivers/dri2/platform_x11_dri3.c

@@ -13,8 +13,11 @@ TERMUX_PKG_CONFLICTS="termux-tools (<< 0.51)"
 _GRADLE_VERSION=8.10.2
 
 termux_step_post_get_source() {
+	. "$TERMUX_SCRIPTDIR/scripts/termux_generator_utils.sh"
+	replace_termux_name "$TERMUX_PKG_SRCDIR" "$TERMUX_APP__PACKAGE_NAME"
+	migrate_termux_folder_tree "$TERMUX_PKG_SRCDIR" "$TERMUX_APP__PACKAGE_NAME"
 	sed -i'' -E -e "s|\@TERMUX_PREFIX\@|${TERMUX_PREFIX}|g" "$TERMUX_PKG_SRCDIR/am-libexec-packaged"
-	sed -i'' -E -e "s|\@TERMUX_APP_PACKAGE\@|${TERMUX_APP_PACKAGE}|g" "$TERMUX_PKG_SRCDIR/app/src/main/java/com/termux/termuxam/FakeContext.java"
+	sed -i'' -E -e "s|\@TERMUX_APP_PACKAGE\@|${TERMUX_APP_PACKAGE}|g" "$TERMUX_PKG_SRCDIR/app/src/main/java/com/logicodeum/ide/termuxam/FakeContext.java"
 }
 
 termux_step_make() {

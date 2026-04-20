@@ -17,7 +17,7 @@ svn_cv_pycfmt_apr_int64_t=UNUSED_REMOVE_AFTER_NEXT_UPDATE
 "
 
 termux_step_pre_configure() {
-	CFLAGS+=" -std=c11 -I$TERMUX_PREFIX/include/perl"
+	CFLAGS+=" -std=c11 -I$TERMUX_PREFIX/include/perl -I$TERMUX_PREFIX/include/apr-1"
 	LDFLAGS+=" -lm -Wl,--as-needed -L$TERMUX_PREFIX/include/perl"
 }
 

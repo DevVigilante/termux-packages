@@ -70,11 +70,11 @@ index 41b9c64..e44f6eb 100644
    <Menu>
 -    <Name>Archlinux</Name>
 -    <Directory>Archlinux.directory</Directory>
-+    <Name>Termux</Name>
++    <Name>com.logicodeum.ide</Name>
 +    <Directory>Termux.directory</Directory>
      <Include>
 -      <Category>Archlinux</Category>
-+      <Category>Termux</Category>
++      <Category>com.logicodeum.ide</Category>
      </Include>
    </Menu>
  

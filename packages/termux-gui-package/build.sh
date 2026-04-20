@@ -1,5 +1,5 @@
 TERMUX_PKG_HOMEPAGE="https://github.com/tareksander/termux-gui-package"
-TERMUX_PKG_DESCRIPTION="A Termux package containing utilities for Termux:GUI"
+TERMUX_PKG_DESCRIPTION="A Termux package containing utilities for com.logicodeum.ide:GUI"
 TERMUX_PKG_LICENSE="GPL-3.0"
 TERMUX_PKG_MAINTAINER="@tareksander"
 TERMUX_PKG_VERSION="0.1.6"

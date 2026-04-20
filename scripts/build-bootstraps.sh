@@ -29,6 +29,8 @@ BOOTSTRAP_ANDROID10_COMPATIBLE=false
 TERMUX_DEFAULT_ARCHITECTURES=("aarch64" "arm" "i686" "x86_64")
 TERMUX_ARCHITECTURES=("${TERMUX_DEFAULT_ARCHITECTURES[@]}")
 
+TERMUX_PACKAGE_MANAGER="apt"
+
 TERMUX_PACKAGES_DIRECTORY="/home/builder/termux-packages"
 TERMUX_BUILT_DEBS_DIRECTORY="$TERMUX_PACKAGES_DIRECTORY/output"
 TERMUX_BUILT_PACKAGES_DIRECTORY="/data/data/.built-packages"
@@ -57,6 +59,101 @@ for cmd in ar awk curl grep gzip find sed tar xargs xz zip; do
 		exit 1
 	fi
 done
+
+# Locate specified package and its dependencies and extract *.deb or *.pkg.tar.xz files to
+# the bootstrap root.
+pull_package() {
+	local package_name=$1
+
+	if grep -q "Package: $package_name$" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/status"; then
+		echo "[*] Skipping already extracted package '$package_name'..."
+		return
+	fi
+
+	local deb
+	for file in "${TERMUX_BUILT_DEBS_DIRECTORY}/$package_name"_*.deb; do
+		current_package_arch="$(echo "$file" | sed -E 's/.*_(aarch64|all|arm|i686|x86_64).deb$/\1/' )"
+		echo "current_package_arch: '$current_package_arch'"
+		if [[ "$current_package_arch" == "$TERMUX_ARCH" ]] || [[ "$current_package_arch" == "all" ]]; then
+			deb="$file"
+			break
+		fi
+	done
+ 
+	if [ ! -e "$deb" ]; then
+		echo "[!] Error: package file for '$package_name' was not found!"
+		exit 1
+	fi
+
+	echo "[*] Extracting '$package_name'..."
+	(cd "${TERMUX_BUILT_DEBS_DIRECTORY}"
+		find . ! -name '*.deb' -delete
+		ar x "$deb"
+
+		# data.tar may have extension different from .xz
+		if [ -f "./data.tar.xz" ]; then
+			data_archive="data.tar.xz"
+		elif [ -f "./data.tar.gz" ]; then
+			data_archive="data.tar.gz"
+		else
+			echo "No data.tar.* found in '$package_name'."
+			exit 1
+		fi
+
+		# Do same for control.tar.
+		if [ -f "./control.tar.xz" ]; then
+			control_archive="control.tar.xz"
+		elif [ -f "./control.tar.gz" ]; then
+			control_archive="control.tar.gz"
+		else
+			echo "No control.tar.* found in '$package_name'."
+			exit 1
+		fi
+
+		# Extract files.
+		tar xf "$data_archive" -C "$BOOTSTRAP_ROOTFS"
+
+		if ! ${BOOTSTRAP_ANDROID10_COMPATIBLE}; then
+			# Register extracted files.
+			tar tf "$data_archive" | sed -E -e 's@^\./@/@' -e 's@^/$@/.@' -e 's@^([^./])@/\1@' > "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/info/${package_name}.list"
+
+			# Generate checksums (md5).
+			tar xf "$data_archive"
+			find data -type f -print0 | xargs -0 -r md5sum | sed 's@^\.$@@g' > "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/info/${package_name}.md5sums"
+
+			# Extract metadata.
+			tar xf "$control_archive"
+			{
+				cat control
+				echo "Status: install ok installed"
+				echo
+			} >> "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/status"
+
+			# Additional data: conffiles & scripts
+			for file in conffiles postinst postrm preinst prerm; do
+				if [ -f "${PWD}/${file}" ]; then
+					cp "$file" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/info/${package_name}.${file}"
+				fi
+			done
+		fi
+
+		local package_dependencies
+		package_dependencies=$(
+			while read -r token; do
+				echo "$token" | cut -d'|' -f1 | sed -E 's@\(.*\)@@'
+			done < <(cat control | grep -i "^Depends:" | sed -E 's@^[Dd]epends:@@' | tr ',' '\n')
+		)
+	
+		# Recursively handle dependencies.
+		if [ -n "$package_dependencies" ]; then
+			local dep
+			for dep in $package_dependencies; do
+				pull_package "$dep"
+			done
+			unset dep
+		fi
+	)
+}
 
 # Build deb files for package and its dependencies deb from source for arch
 build_package() {
@@ -218,6 +315,12 @@ add_termux_bootstrap_second_stage_files() {
 		> "${BOOTSTRAP_ROOTFS}/${TERMUX_BOOTSTRAP__BOOTSTRAP_SECOND_STAGE_DIR}/$TERMUX_BOOTSTRAP__BOOTSTRAP_SECOND_STAGE_ENTRY_POINT_SUBFILE"
 	chmod 700 "${BOOTSTRAP_ROOTFS}/${TERMUX_BOOTSTRAP__BOOTSTRAP_SECOND_STAGE_DIR}/$TERMUX_BOOTSTRAP__BOOTSTRAP_SECOND_STAGE_ENTRY_POINT_SUBFILE"
 
+	if [ -n "${DISABLE_BOOTSTRAP_SECOND_STAGE-}" ]; then
+		ln -s "$TERMUX_BOOTSTRAP__BOOTSTRAP_SECOND_STAGE_ENTRY_POINT_SUBFILE" \
+			"${BOOTSTRAP_ROOTFS}/${TERMUX_BOOTSTRAP__BOOTSTRAP_SECOND_STAGE_DIR}/$TERMUX_BOOTSTRAP__BOOTSTRAP_SECOND_STAGE_ENTRY_POINT_SUBFILE.lock"
+	fi
+	mkdir -p "${BOOTSTRAP_ROOTFS}/${TERMUX__PREFIX__PROFILE_D_DIR}"
+
 	# TODO: Remove it when Termux app supports `pacman` bootstraps installation.
 	sed -e "s|@TERMUX_PREFIX@|${TERMUX_PREFIX}|g" \
 		-e "s|@TERMUX__PREFIX__PROFILE_D_DIR@|${TERMUX__PREFIX__PROFILE_D_DIR}|g" \
@@ -243,7 +346,13 @@ create_bootstrap_archive() {
 			rm -f "$link"
 		done < <(find . -type l -print0)
 
-		zip -r9 "${BOOTSTRAP_TMPDIR}/bootstrap-${1}.zip" ./*
+		# in some cases this can be approximately 4% real-world size reduction of bootstrap
+		# compared to using zip command
+		# I observed a real 7.6 GB bootstrap containing entirely termux packages
+		# reduce to 7.3 GB when rezipped this way.
+		sudo apt-get update
+		sudo apt-get install -y p7zip-full
+		7z a "${BOOTSTRAP_TMPDIR}/bootstrap-${1}.zip" ./* -mfb=258 -mpass=15
 	)
 
 	mv -f "${BOOTSTRAP_TMPDIR}/bootstrap-${1}.zip" "$TERMUX_PACKAGES_DIRECTORY/"
@@ -308,7 +417,7 @@ Available command_options:
 
 
 The package name/prefix that the bootstrap is built for is defined by
-TERMUX_APP_PACKAGE in 'scrips/properties.sh'. It defaults to 'com.termux'.
+TERMUX_APP_PACKAGE in 'scrips/properties.sh'. It defaults to 'com.logicodeum.ide'.
 If package name is changed, make sure to run
 `./scripts/run-docker.sh ./clean.sh` or pass '-f' to force rebuild of packages.
 
@@ -370,6 +479,9 @@ main() {
 					return 1
 				fi
 				;;
+			--disable-bootstrap-second-stage)
+				DISABLE_BOOTSTRAP_SECOND_STAGE=1
+				;;
 			-f)
 				BUILD_PACKAGE_OPTIONS+=("-f")
 				FORCE_BUILD_PACKAGES=1
@@ -422,55 +534,7 @@ main() {
 		PACKAGES=()
 		EXTRACTED_PACKAGES=()
 
-		# Package manager.
-		if ! ${BOOTSTRAP_ANDROID10_COMPATIBLE}; then
-			PACKAGES+=("apt")
-		fi
-
-		# Core utilities.
-		PACKAGES+=("bash") # Used by `termux-bootstrap-second-stage.sh`
-		PACKAGES+=("bzip2")
-		if ! ${BOOTSTRAP_ANDROID10_COMPATIBLE}; then
-			PACKAGES+=("command-not-found")
-		else
-			PACKAGES+=("proot")
-		fi
-		PACKAGES+=("coreutils")
-		PACKAGES+=("dash")
-		PACKAGES+=("diffutils")
-		PACKAGES+=("findutils")
-		PACKAGES+=("gawk")
-		PACKAGES+=("grep")
-		PACKAGES+=("gzip")
-		PACKAGES+=("less")
-		PACKAGES+=("procps")
-		PACKAGES+=("psmisc")
-		PACKAGES+=("sed")
-		PACKAGES+=("tar")
-		PACKAGES+=("termux-core")
-		PACKAGES+=("termux-exec")
-		PACKAGES+=("termux-keyring")
-		PACKAGES+=("termux-tools")
-		PACKAGES+=("util-linux")
-
-		# Additional.
-		PACKAGES+=("ed")
-		PACKAGES+=("debianutils")
-		PACKAGES+=("dos2unix")
-		PACKAGES+=("inetutils")
-		PACKAGES+=("lsof")
-		PACKAGES+=("nano")
-		PACKAGES+=("net-tools")
-		PACKAGES+=("patch")
-		PACKAGES+=("unzip")
-
-		# Handle additional packages.
-		for add_pkg in "${ADDITIONAL_PACKAGES[@]}"; do
-			if [[ " ${PACKAGES[*]} " != *" $add_pkg "* ]]; then
-				PACKAGES+=("$add_pkg")
-			fi
-		done
-		unset add_pkg
+		PACKAGES+=("openjdk-21")
 
 		# Build packages.
 		for package_name in "${PACKAGES[@]}"; do
@@ -480,10 +544,20 @@ main() {
 		done
 
 		# Extract all debs.
-		extract_debs "$TERMUX_ARCH" || return $?
+		for pull_pkg in "${PACKAGES[@]}"; do
+			pull_package "$pull_pkg"
+		done
+		unset pull_pkg
+		if [ -f output/termux-x11-nightly_all.deb ]; then
+			pull_package termux-x11-nightly
+		fi
+
+		if [[ "$TERMUX_APP_PACKAGE" == "com.retired64.termux" ]]; then
+			extract_debs "$TERMUX_ARCH"
+		fi
 
 		# Add termux bootstrap second stage files
-		add_termux_bootstrap_second_stage_files "$package_arch"
+		add_termux_bootstrap_second_stage_files "$TERMUX_ARCH"
 
 		# Create bootstrap archive.
 		create_bootstrap_archive "$TERMUX_ARCH" || return $?

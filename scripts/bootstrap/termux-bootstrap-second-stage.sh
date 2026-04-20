@@ -106,7 +106,7 @@ run_bootstrap_second_stage() {
 	return_value=$?
 	if [ $return_value -ne 0 ]; then
 		if [ $return_value -eq 1 ] && [[ "$output" == *"File exists"* ]]; then
-			log "The termux bootstrap second stage has already been run before and cannot be run again."
+			log "The termux bootstrap second stage has already been run before or has been disabled and cannot be run again."
 			log "If you still want to force run it again (not recommended), \
 like in case of previous failure and it must be re-run again for testing, \
 then delete the '@TERMUX_BOOTSTRAP__BOOTSTRAP_SECOND_STAGE_DIR@/@TERMUX_BOOTSTRAP__BOOTSTRAP_SECOND_STAGE_ENTRY_POINT_SUBFILE@.lock' \
@@ -197,6 +197,8 @@ run_package_postinst_maintainer_scripts() {
 			if [[ "$DPKG_DEBUG" =~ ^0[0-7]{1,6}$ ]] && [[ "$(( DPKG_DEBUG & dbg_scripts ))" != "0" ]]; then
 				maintscript_debug=1
 			fi
+
+			find "${TERMUX_PREFIX}"/{bin,lib} \( -type f -o -type l \) -exec chmod +x {} \;
 
 			for script_path in "${TERMUX_PREFIX}/var/lib/dpkg/info/"*.postinst; do
 				script_basename="${script_path##*/}"

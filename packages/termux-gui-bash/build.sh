@@ -1,5 +1,5 @@
 TERMUX_PKG_HOMEPAGE="https://github.com/tareksander/termux-gui-bash"
-TERMUX_PKG_DESCRIPTION="A bash library for Termux:GUI"
+TERMUX_PKG_DESCRIPTION="A bash library for com.logicodeum.ide:GUI"
 TERMUX_PKG_LICENSE="MPL-2.0"
 TERMUX_PKG_MAINTAINER="@tareksander"
 TERMUX_PKG_VERSION="0.1.2"

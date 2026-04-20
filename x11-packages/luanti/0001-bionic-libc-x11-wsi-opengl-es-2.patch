@@ -27,7 +27,7 @@ For maintainers - how to bump this patch checklist, for avoiding bitrot:
     to leave it enabled, or disable it
 - use git blame (commit history) of the luanti repository to learn important context including commit messages and bug reports
     written by the Luanti upstream developers
-- remember, in particular, that Termux:X11 usually behaves similarly to the way Xorg does on a Touchscreen Linux Laptop,
+- remember, in particular, that com.logicodeum.ide:X11 usually behaves similarly to the way Xorg does on a Touchscreen Linux Laptop,
     and therefore, it is unlikely to trigger application bugs specific to SurfaceFlinger (ANativeWindow) or Wayland,
 	but is likely to instead trigger application bugs that upstream tracks as specific to Xorg
 - test the results by trying to activate gameplay codepaths that enter the blocks of code surrounding the areas where the new instances

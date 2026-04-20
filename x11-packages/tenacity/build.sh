@@ -40,7 +40,7 @@ termux_step_create_debscripts() {
 		#!$TERMUX_PREFIX/bin/sh
 		echo
 		echo "********"
-		echo "Tenacity can not use microphone until you grant microphone access to Termux:API."
+		echo "Tenacity can not use microphone until you grant microphone access to com.logicodeum.ide:API."
 		echo "********"
 		echo
 	EOF

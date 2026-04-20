@@ -3,7 +3,7 @@ set -euo pipefail
 
 TERMUX_SCRIPTDIR=$(cd "$(realpath "$(dirname "$0")")"; cd ..; pwd)
 : ${TERMUX_BUILDER_IMAGE_NAME:=ghcr.io/termux/package-builder}
-: ${CONTAINER_NAME:=termux-package-builder}
+: ${CONTAINER_NAME:=com.logicodeum.ide-f-droid-package-builder}
 : ${TERMUX_DOCKER_RUN_EXTRA_ARGS:=}
 : ${TERMUX_DOCKER_EXEC_EXTRA_ARGS:=}
 BUILDSCRIPT_NAME=build-package.sh
@@ -92,7 +92,7 @@ if [ "$UNAME" = Darwin ]; then
 	SEC_OPT=""
 else
 	REPOROOT="$(dirname $(readlink -f $0))/../"
-	SEC_OPT=" --security-opt seccomp=$REPOROOT/scripts/profile.json --security-opt apparmor=_custom-termux-package-builder-$CONTAINER_NAME --cap-add CAP_SYS_ADMIN --device /dev/fuse"
+	SEC_OPT=" --security-opt seccomp=$REPOROOT/scripts/profile.json"
 fi
 
 if [ "${CI:-}" = "true" ]; then
@@ -138,6 +138,7 @@ if [ -z "$APPARMOR_PARSER" ] || ! $SUDO aa-status --enabled; then
 	echo "         Avoid executing untrusted code in the container"
 	APPARMOR_PARSER=""
 fi
+APPARMOR_PARSER=""
 
 load_apparmor_profile() {
 	local profile_path="$1"

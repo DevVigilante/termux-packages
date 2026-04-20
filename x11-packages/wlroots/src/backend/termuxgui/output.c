@@ -286,7 +286,7 @@ struct wlr_output *wlr_tgui_output_create(struct wlr_backend *wlr_backend) {
     tgui_activity_set_task_description(output->backend->conn, output->activity, NULL, 0, name);
 
     char description[128];
-    snprintf(description, sizeof(description), "Termux:GUI output %zu", output_num);
+    snprintf(description, sizeof(description), "com.logicodeum.ide:GUI output %zu", output_num);
     wlr_output_set_description(wlr_output, description);
 
     uint32_t events = WL_EVENT_READABLE | WL_EVENT_ERROR | WL_EVENT_HANGUP;

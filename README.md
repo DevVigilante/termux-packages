@@ -6,7 +6,7 @@
 [![Repology metadata](https://github.com/termux/repology-metadata/workflows/Repology%20metadata/badge.svg)](https://repology.org/repository/termux)
 
 [![Join the Termux Discord server](https://img.shields.io/discord/641256914684084234.svg?label=&logo=discord&logoColor=ffffff&color=5865F2)](https://discord.gg/HXpF69X)
-[![Join the Termux space on Matrix](https://img.shields.io/badge/Matrix-%E2%80%8B?style=plastic&logo=matrix&logoColor=white&color=green)](https://matrix.to/#/#Termux:matrix.org)
+[![Join the Termux space on Matrix](https://img.shields.io/badge/Matrix-%E2%80%8B?style=plastic&logo=matrix&logoColor=white&color=green)](https://matrix.to/#/#com.logicodeum.ide:matrix.org)
 [![Join the Termux server on Telegram](https://img.shields.io/badge/Telegram-%E2%80%8B?style=plastic&logo=telegram&logoColor=white&color=blue)](https://t.me/termux24x7)
 [![Official subreddit](https://img.shields.io/badge/Reddit-%E2%80%8B?style=plastic&logo=reddit&logoColor=white&color=red)](https://www.reddit.com/r/termux/)
 

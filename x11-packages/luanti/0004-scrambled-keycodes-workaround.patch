@@ -1,6 +1,6 @@
-After https://github.com/termux/termux-x11/pull/768, Termux:X11 now supports
+After https://github.com/termux/termux-x11/pull/768, com.logicodeum.ide:X11 now supports
 Backspace Key (in both hardware and software keyboards), but this would not work
-in certain specific games like Luanti and SuperTux (neither in Termux:X11 nor in
+in certain specific games like Luanti and SuperTux (neither in com.logicodeum.ide:X11 nor in
 other X11 server implementations like the $PREFIX/bin/Xvnc program from the
 tigervnc package) because there is something bugged about their keymaps when
 they are built for Termux that causes the registered keyboard inputs to be
@@ -19,7 +19,7 @@ This patch works around the problem as it manifests in Luanti.
 
 - Globally (to Luanti) replaces the internal keycode of KEY_BACK with 0x9E, which is a value
   that has an unknown origination point, but is now detected by debuggers inside the scancode
-  handling functions of Luanti's code after Backspace support was added to Termux:X11,
+  handling functions of Luanti's code after Backspace support was added to com.logicodeum.ide:X11,
   for both hardware and software keyboards
 
 - No other keys are currently known to be affected by these problems
