@@ -8,17 +8,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [aarch64, arm, i686, x86_64]
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
-      - name: Build bootstraps
+      - name: Build bootstraps (${{ matrix.arch }})
         run: |
           scripts/free-space.sh
           scripts/run-docker.sh sudo ln -sf "/data/data/com.logicodeum.ide/aosp" /system
-          scripts/run-docker.sh scripts/build-bootstraps.sh  --add xkeyboard-config --disable-bootstrap-second-stage --architectures aarch64
+          scripts/run-docker.sh scripts/build-bootstraps.sh \
+            --add xkeyboard-config \
+            --disable-bootstrap-second-stage \
+            --architectures ${{ matrix.arch }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4.6.0
         with:
-          name: Termux bootstraps
+          name: bootstrap-${{ matrix.arch }}
           path: |
             ./*.zip
